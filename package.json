@@ -10,14 +10,24 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:vscode-css-transformer.helloWorld"
+    "onCommand:vscode-css-transformer.fromSelection",
+    "onCommand:vscode-css-transformer.fromClipboard",
+    "onCommand:vscode-css-transformer.css-to-style-fromClipboard"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "vscode-css-transformer.helloWorld",
-        "title": "Hello World"
+        "command": "vscode-css-transformer.fromSelection",
+        "title": "regular css to react css: Convert from selection"
+      },
+      {
+        "command": "vscode-css-transformer.fromClipboard",
+        "title": "regular css to react css: Convert from clipboard"
+      },
+      {
+        "command": "vscode-css-transformer.css-to-style-fromClipboard",
+        "title": "css to react style: Convert from clipboard"
       }
     ]
   },
@@ -33,9 +43,11 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
+    "@types/copy-paste": "1.1.30",
     "@types/glob": "^7.2.0",
     "@types/mocha": "^9.1.1",
     "@types/node": "16.x",
+    "@types/universal-analytics": "0.3.27",
     "@types/vscode": "^1.68.0",
     "@typescript-eslint/eslint-plugin": "^5.27.0",
     "@typescript-eslint/parser": "^5.27.0",
@@ -47,5 +59,12 @@
     "typescript": "^4.7.2",
     "webpack": "^5.72.1",
     "webpack-cli": "^4.9.2"
+  },
+  "dependencies": {
+    "copy-paste": "^1.3.0",
+    "json-to-ts": "1.7.0",
+    "react-style-object-to-css": "^1.1.2",
+    "universal-analytics": "^0.4.13",
+    "uuid-by-string": "^0.2.2"
   }
 }

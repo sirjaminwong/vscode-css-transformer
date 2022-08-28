@@ -10,14 +10,29 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:vscode-css-transformer.helloWorld"
+    "onCommand:vscode-css-transformer.styleToCssFromSelection",
+    "onCommand:vscode-css-transformer.styleToCssFromClipboard",
+    "onCommand:vscode-css-transformer.cssToStyleFromSelection",
+    "onCommand:vscode-css-transformer.cssToStyleFromClipboard"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "vscode-css-transformer.helloWorld",
-        "title": "Hello World"
+        "command": "vscode-css-transformer.styleToCssFromSelection",
+        "title": "style to css: Convert from selection"
+      },
+      {
+        "command": "vscode-css-transformer.styleToCssFromClipboard",
+        "title": "style to css: Convert from clipboard"
+      },
+      {
+        "command": "vscode-css-transformer.cssToStyleFromSelection",
+        "title": "css to style: Convert from selection"
+      },
+      {
+        "command": "vscode-css-transformer.cssToStyleFromClipboard",
+        "title": "css to style: Convert from clipboard"
       }
     ]
   },

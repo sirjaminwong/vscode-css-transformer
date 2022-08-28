@@ -1,26 +1,113 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import * as path from "path";
+import * as os from "os";
+import * as fs from "fs";
+import styleToCSS from "./utils/react-to-css";
+import cssToStyle from "./utils/css-to-style";
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
-	
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "vscode-css-transformer" is now active!');
+import { Uri, ExtensionContext, commands } from "vscode";
+import JsonToTS from "json-to-ts";
+import {
+  handleError,
+  getClipboardText,
+  parseJson,
+  pasteToMarker,
+  getSelectedText,
+  getViewColumn,
+  validateLength,
+} from "./lib";
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('vscode-css-transformer.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from vscode-css-transformer!');
-	});
-
-	context.subscriptions.push(disposable);
+export function activate(context: ExtensionContext) {
+  context.subscriptions.push(
+    commands.registerCommand(
+      "vscode-css-transformer.styleToCssFromSelection",
+      styleToCssFromSelection
+    )
+  );
+  context.subscriptions.push(
+    commands.registerCommand(
+      "vscode-css-transformer.styleToCssFromClipboard",
+      styleToCssFromClipboard
+    )
+  );
+  context.subscriptions.push(
+    commands.registerCommand(
+      "vscode-css-transformer.cssToStyleFromSelection",
+      cssToStyleFromSelection
+    )
+  );
+  context.subscriptions.push(
+    commands.registerCommand(
+      "vscode-css-transformer.cssToStyleFromClipboard",
+      cssToStyleFromClipboard
+    )
+  );
 }
 
-// this method is called when your extension is deactivated
-export function deactivate() {}
+function jsonToTsFromSelection() {
+  const tmpFilePath = path.join(os.tmpdir(), "json-to-ts.ts");
+  const tmpFileUri = Uri.file(tmpFilePath);
+
+  getSelectedText()
+    .then(validateLength)
+    .then(parseJson)
+    .then((json) => {
+      return JsonToTS(json).reduce((a, b) => `${a}\n\n${b}`);
+    })
+    .then((interfaces) => {
+      fs.writeFileSync(tmpFilePath, interfaces);
+    })
+    .then(() => {
+      commands.executeCommand("vscode.open", tmpFileUri, getViewColumn());
+    })
+    .catch(handleError);
+}
+
+function styleToCssFromClipboard() {
+  getClipboardText()
+    .then(validateLength)
+    .then(parseJson)
+    .then((json) => {
+      return styleToCSS(json);
+    })
+    .then((result) => {
+      pasteToMarker(result);
+    })
+    .catch(handleError);
+}
+
+function styleToCssFromSelection() {
+  getSelectedText()
+    .then(validateLength)
+    .then(parseJson)
+    .then((json) => {
+      return styleToCSS(json);
+    })
+    .then((result) => {
+      pasteToMarker(result);
+    })
+    .catch(handleError);
+}
+
+function cssToStyleFromClipboard() {
+  getClipboardText()
+    .then(validateLength)
+    .then((cssString) => {
+      return JSON.stringify(cssToStyle(cssString));
+    })
+    .then((result) => {
+      pasteToMarker(result);
+    })
+    .catch(handleError);
+}
+
+function cssToStyleFromSelection() {
+  getSelectedText()
+    .then(validateLength)
+    .then((cssString) => {
+      return JSON.stringify(cssToStyle(cssString));
+    })
+    .then((result) => {
+      pasteToMarker(result);
+    })
+    .catch(handleError);
+}
